@@ -4,11 +4,13 @@
 # Project Main file for Equilizer
 
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
 import sys
 import os
 from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog
 from PySide6.QtCore import QFile
+from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from ui import Ui_Equilizer
 from wavey import Wavey
 
@@ -23,8 +25,10 @@ class MainWindow(QMainWindow):
         self.time_signal = np.array([])
         self.freq_signal = np.array([])
         self.time_sample = np.array([])
+        self.freq_sample = np.array([])
 
         self._initButtons()
+        self._initPlots()
 
 
     def _initButtons(self):
@@ -53,10 +57,12 @@ class MainWindow(QMainWindow):
             self._resetFunction()
 
         else:
-            self.time_signal, = self.audio.import_song(self.fileURL)
-            #self.freq_signal = self.audio.fft(self.time_signal)
-            print(self.time_signal)
-            #print(self.freq_signal)
+            self.time_signal, self.time_sample = self.audio.import_song(self.fileURL)
+            self.freq_signal, self.freq_sample = self.audio.fft(self.time_signal)
+            self.audio.update_time_plot(self.time_signal, self.time_sample)
+            self.timeFig.draw()
+            self.audio.update_freq_plot(self.freq_signal, self.freq_sample)
+            self.freqFig.draw()
 
 
     def _resetFunction(self):
@@ -92,6 +98,20 @@ class MainWindow(QMainWindow):
         self.ui.verticalSlider12k5Hz.setValue(0)
         self.ui.verticalSlider16kHz.setValue(0)
         self.ui.verticalSlider20kHz.setValue(0)
+
+        self.audio.reset_plot(self.audio.timefig, self.audio.timeax)
+        self.timeFig.draw()
+        self.audio.reset_plot(self.audio.freqfig, self.audio.freqax)
+        self.freqFig.draw()
+
+
+    def _initPlots(self):
+        self.timeFig = FigureCanvas(self.audio.init_time_plot())
+        self.ui.timePlotLayout.addWidget(self.timeFig)
+        self.freqFig = FigureCanvas(self.audio.init_freq_plot())
+        self.ui.frequencyPlotLayout.addWidget(self.freqFig)
+
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

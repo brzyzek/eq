@@ -24,6 +24,8 @@ class Ui_Equilizer(object):
         self.centralwidget = QWidget(Equilizer)
         self.centralwidget.setObjectName(u"centralwidget")
 
+        self.centralwidget.setStyleSheet("background-color: silver")
+
         self.labeldB = QLabel(self.centralwidget)
         self.labeldB.setObjectName(u"labeldB")
         self.labeldB.setGeometry(QRect(0, 379, 21, 16))
@@ -693,6 +695,7 @@ class Ui_Equilizer(object):
         self.lineEditFileBrowse = QLineEdit(self.centralwidget)
         self.lineEditFileBrowse.setObjectName(u"lineEditFileBrowse")
         self.lineEditFileBrowse.setGeometry(QRect(20, 20, 341, 22))
+        self.lineEditFileBrowse.setStyleSheet("background-color: whitesmoke")
         self.pushButtonFileBrowse = QPushButton(self.centralwidget)
         self.pushButtonFileBrowse.setObjectName(u"pushButtonFileBrowse")
         self.pushButtonFileBrowse.setGeometry(QRect(370, 20, 75, 24))
@@ -703,18 +706,24 @@ class Ui_Equilizer(object):
         self.pushButtonReset.setObjectName(u"pushButtonFileImport")
         self.pushButtonReset.setGeometry(QRect(530, 20, 75, 24))
 
-        # self.frequencyPlotWidget = MplWidget(self.centralwidget) #DEVC MATPLOTLIB
-        # self.frequencyPlotWidget.setObjectName(u"frequencyPlotWidget")
-        # self.frequencyPlotWidget.setGeometry(QRect(20, 70, 641, 141))
+        self.frequencyPlotLayout = QVBoxLayout()
+        self.frequencyPlotLayout.setObjectName(u"frequencyPlotLayout")
+        self.frequencyPlotWidget = QWidget(self.centralwidget) #DEVC MATPLOTLIB
+        self.frequencyPlotWidget.setObjectName(u"frequencyPlotWidget")
+        self.frequencyPlotWidget.setGeometry(QRect(20, 70, 641, 141))
+        self.frequencyPlotWidget.setLayout(self.frequencyPlotLayout)
 
-        # self.timePlotWidget = MplWidget(self.centralwidget) DEVC MATPLOTLIB
-        # self.timePlotWidget.setObjectName(u"timePlotWidget")
-        # self.timePlotWidget.setGeometry(QRect(20, 240, 641, 141))
+        self.timePlotLayout = QVBoxLayout()
+        self.timePlotLayout.setObjectName(u"timePlotLayout")
+        self.timePlotWidget = QWidget(self.centralwidget) #DEVC MATPLOTLIB
+        self.timePlotWidget.setObjectName(u"timePlotWidget")
+        self.timePlotWidget.setGeometry(QRect(20, 240, 641, 141))
+        self.timePlotWidget.setLayout(self.timePlotLayout)
 
-        # self.filterPlotWidget = MplWidget(self.centralwidget) DEVC MATPLOTLIB
+        self.filterPlotWidget = QWidget(self.centralwidget) #DEVC MATPLOTLIB
     
-        # self.filterPlotWidget.setObjectName(u"filterPlotWidget")
-        # self.filterPlotWidget.setGeometry(QRect(690, 70, 341, 211))
+        self.filterPlotWidget.setObjectName(u"filterPlotWidget")
+        self.filterPlotWidget.setGeometry(QRect(690, 70, 341, 211))
 
         self.radioButtonpolezero = QRadioButton(self.centralwidget)
         self.radioButtonpolezero.setObjectName(u"radioButtonpolezero")
