@@ -751,9 +751,9 @@ class Ui_Equilizer(object):
         self.labelTimePlot.setGeometry(QRect(20, 220, 81, 16))
 
         Equilizer.setCentralWidget(self.centralwidget)
-        self.statusbar = QStatusBar(Equilizer)
-        self.statusbar.setObjectName(u"statusbar")
-        Equilizer.setStatusBar(self.statusbar)
+        # self.statusbar = QStatusBar(Equilizer)
+        # self.statusbar.setObjectName(u"statusbar")
+        # Equilizer.setStatusBar(self.statusbar)
 
         self.retranslateUi(Equilizer)
 

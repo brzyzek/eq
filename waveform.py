@@ -1,16 +1,17 @@
 # c. 06/30/2022
 # tom brzyzek
 
-# Audio Importing Tool.
+# Waveform Generation and Adjustment Toolset
 
+from ast import Pass
 import numpy as np
 import scipy.io.wavfile as spwav
 import scipy.signal as spsig
 import matplotlib
 import matplotlib.pyplot as plt
-import os
+import audio_dspy as adsp
 
-class Wavey:
+class Signal:
     def __init__(self):
         self.sample_rate = 44100                                    # sample rate of song data
         # self.timefig = 0
@@ -59,6 +60,13 @@ class Wavey:
         freq_arr = np.fft.rfftfreq(time_data.size, d=1./self.sample_rate)
         return freq_data, freq_arr
 
+    def normalize(self, data):
+        return data / np.max(np.abs(data))
+        
+class SignalPlot(Signal):
+    def __init__(self):
+        Pass
+        
     def init_time_plot(self):
         self.timefig = matplotlib.figure.Figure(figsize=(6.677,1.468), layout='constrained')
         self.timeax = self.timefig.figure.subplots()
@@ -94,10 +102,48 @@ class Wavey:
     def reset_plot(self, figure, axis):
         axis.cla()
         self.format_plot(figure, axis)
+
+class EQ:
+    def __init__(self, sample_rate):
+        self.sample_rate = sample_rate
+        self.EQ = adsp.EQ(self.sample_rate)
+
+    def reset(self):
+        self.EQ.reset()
+
+    def add_filter(self, type, fc, Q = 1, gain = 0):
+        match type:
+            case 'bell':
+                self.EQ.add_bell(fc, Q, gain)
+            case 'LPF':
+                self.EQ.add_LPF(fc, Q)
+            case 'HPF':
+                self.EQ.add_HPF(fc, Q)
+            case 'lowshelf':
+                self.EQ.add_lowshelf(fc, Q, gain)
+            case 'highshelf':
+                self.EQ.add_highshelf(fc, Q, gain)
+            case 'notch':
+                self.EQ.add_notch(fc, Q)
+            case _:
+                raise ValueError(type)
+
+    def add_filter_by_coeffs(self, b_coeffs, a_coeffs):
+        if np.size(b_coeffs) != np.size(a_coeffs):
+            raise ValueError
+        
+        order = np.size(b_coeffs - 1)
+        filt = adsp.Filter(order, self.sample_rate)
+        filt.set_coefs(b_coeffs, a_coeffs)
+        self.EQ.add_filter(filt)
+
+
+
+
+
         
 
-
-
+# Preliminary Test Block
 # x = Wavey()
 # fileURL = "./songs/africa-toto.wav"
 # time_signal, time_sample = x.import_song(fileURL)

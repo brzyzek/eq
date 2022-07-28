@@ -12,7 +12,7 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog
 from PySide6.QtCore import QFile
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from ui import Ui_Equilizer
-from wavey import Wavey
+from waveform import Signal, SignalPlot
 
 
 class MainWindow(QMainWindow):
@@ -20,7 +20,8 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
         self.ui = Ui_Equilizer()
         self.ui.setupUi(self)
-        self.audio = Wavey()
+        self.audio = Signal()
+        self.audioPlot = SignalPlot()
         self.fileURL = ""
         self.time_signal = np.array([])
         self.freq_signal = np.array([])
@@ -59,9 +60,9 @@ class MainWindow(QMainWindow):
         else:
             self.time_signal, self.time_sample = self.audio.import_song(self.fileURL)
             self.freq_signal, self.freq_sample = self.audio.fft(self.time_signal)
-            self.audio.update_time_plot(self.time_signal, self.time_sample)
+            self.audioPlot.update_time_plot(self.time_signal, self.time_sample)
             self.timeFig.draw()
-            self.audio.update_freq_plot(self.freq_signal, self.freq_sample)
+            self.audioPlot.update_freq_plot(self.freq_signal, self.freq_sample)
             self.freqFig.draw()
 
 
@@ -99,16 +100,16 @@ class MainWindow(QMainWindow):
         self.ui.verticalSlider16kHz.setValue(0)
         self.ui.verticalSlider20kHz.setValue(0)
 
-        self.audio.reset_plot(self.audio.timefig, self.audio.timeax)
+        self.audioPlot.reset_plot(self.audioPlot.timefig, self.audioPlot.timeax)
         self.timeFig.draw()
-        self.audio.reset_plot(self.audio.freqfig, self.audio.freqax)
+        self.audioPlot.reset_plot(self.audioPlot.freqfig, self.audioPlot.freqax)
         self.freqFig.draw()
 
 
     def _initPlots(self):
-        self.timeFig = FigureCanvas(self.audio.init_time_plot())
+        self.timeFig = FigureCanvas(self.audioPlot.init_time_plot())
         self.ui.timePlotLayout.addWidget(self.timeFig)
-        self.freqFig = FigureCanvas(self.audio.init_freq_plot())
+        self.freqFig = FigureCanvas(self.audioPlot.init_freq_plot())
         self.ui.frequencyPlotLayout.addWidget(self.freqFig)
 
 
