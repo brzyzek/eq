@@ -20,7 +20,7 @@ class Ui_Equilizer(object):
     def setupUi(self, Equilizer):
         if not Equilizer.objectName():
             Equilizer.setObjectName(u"Equilizer")
-        Equilizer.resize(1082, 620)
+        Equilizer.resize(1240, 620)
         self.centralwidget = QWidget(Equilizer)
         self.centralwidget.setObjectName(u"centralwidget")
 
@@ -692,6 +692,22 @@ class Ui_Equilizer(object):
         self.verticalLayout20kHz.addWidget(self.label20kHz)
         self.eqSliderLayout.addLayout(self.verticalLayout20kHz)
 
+        self.pushButtonEQ = QPushButton(self.centralwidget)
+        self.pushButtonEQ.setObjectName(u"pushButtonEQ")
+        self.pushButtonEQ.setGeometry(QRect(1105, 405, 100, 25))
+        self.pushButtonPlayOriginal = QPushButton(self.centralwidget)
+        self.pushButtonPlayOriginal.setObjectName(u"pushButtonPlayOriginal")
+        self.pushButtonPlayOriginal.setGeometry(QRect(1105, 440, 100, 25))
+        self.pushButtonPlayFiltered = QPushButton(self.centralwidget)
+        self.pushButtonPlayFiltered.setObjectName(u"pushButtonPlayFiltered")
+        self.pushButtonPlayFiltered.setGeometry(QRect(1105, 475, 100, 25))
+        self.pushButtonStop = QPushButton(self.centralwidget)
+        self.pushButtonStop.setObjectName(u"pushButtonStop")
+        self.pushButtonStop.setGeometry(QRect(1105, 510, 100, 25))
+        self.pushButtonSaveFiltered = QPushButton(self.centralwidget)
+        self.pushButtonSaveFiltered.setObjectName(u"pushButtonSaveFiltered")
+        self.pushButtonSaveFiltered.setGeometry(QRect(1105, 545, 100, 25))
+
         self.lineEditFileBrowse = QLineEdit(self.centralwidget)
         self.lineEditFileBrowse.setObjectName(u"lineEditFileBrowse")
         self.lineEditFileBrowse.setGeometry(QRect(20, 20, 341, 22))
@@ -797,6 +813,11 @@ class Ui_Equilizer(object):
         self.label12k5Hz.setText(QCoreApplication.translate("Equilizer", u"12k5", None))
         self.label16kHz.setText(QCoreApplication.translate("Equilizer", u"16k", None))
         self.label20kHz.setText(QCoreApplication.translate("Equilizer", u"20k", None))
+        self.pushButtonEQ.setText(QCoreApplication.translate("Equilizer", u"Update EQ", None))
+        self.pushButtonPlayOriginal.setText(QCoreApplication.translate("Equilizer", u"Play Original", None))
+        self.pushButtonPlayFiltered.setText(QCoreApplication.translate("Equilizer", u"Play Filtered", None))
+        self.pushButtonStop.setText(QCoreApplication.translate("Equilizer", u"Stop Playing", None))
+        self.pushButtonSaveFiltered.setText(QCoreApplication.translate("Equilizer", u"Save Filtered", None))
         self.pushButtonFileBrowse.setText(QCoreApplication.translate("Equilizer", u"Browse", None))
         self.pushButtonFileImport.setText(QCoreApplication.translate("Equilizer", u"Import", None))
         self.pushButtonReset.setText(QCoreApplication.translate("Equilizer", u"Reset", None))
