@@ -143,7 +143,6 @@ class SignalPlot(Signal):
         self.filtax.add_patch(circ)
         self.filtax.scatter(pole_x, pole_y, label="Poles", marker='x', alpha=0.5)
         self.filtax.scatter(zero_x, zero_y, label="Zeros", marker='o', alpha=0.5)
-        # plt.show() #DEVR
 
     def reset_plot(self, figure, axis):
         axis.cla()
