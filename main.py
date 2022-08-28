@@ -9,12 +9,11 @@ import matplotlib
 import matplotlib.pyplot as plt
 import sys
 import os
-from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog
+from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox
 from PySide6.QtCore import QFile
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from ui import Ui_Equilizer
 from waveform import Signal, SignalPlot, EQ
-from functools import partial
 
 
 class MainWindow(QMainWindow):
@@ -49,6 +48,7 @@ class MainWindow(QMainWindow):
         self.ui.pushButtonPlayOriginal.clicked.connect(self._playOriginal)
         self.ui.pushButtonPlayFiltered.clicked.connect(self._playFiltered)
         self.ui.pushButtonStop.clicked.connect(self._stopPlaying)
+        self.ui.pushButtonSaveFiltered.clicked.connect(self._saveFiltered)
 
 
     def _FileExplorer(self):
@@ -115,6 +115,8 @@ class MainWindow(QMainWindow):
         self.timeFig.draw()
         self.audioPlot.reset_plot(self.audioPlot.freqfig, self.audioPlot.freqax)
         self.freqFig.draw()
+        self.audioPlot.reset_plot(self.audioPlot.filtfig, self.audioPlot.filtax)
+        self.filtFig.draw()
 
         self.EQ.reset()
 
@@ -126,6 +128,8 @@ class MainWindow(QMainWindow):
         self.ui.timePlotLayout.addWidget(self.timeFig)
         self.freqFig = FigureCanvas(self.audioPlot.init_freq_plot())
         self.ui.frequencyPlotLayout.addWidget(self.freqFig)
+        self.filtFig = FigureCanvas(self.audioPlot.init_filt_plot())
+        self.ui.filterPlotLayout.addWidget(self.filtFig)
 
     def _initFilters(self):
         """
@@ -188,12 +192,16 @@ class MainWindow(QMainWindow):
                 self.EQ.add_filter(self.filtPar[i][0], self.filtPar[i][1], self.filtPar[i][2], 10**(val/20))
             i += 1
 
-        print(self.EQ.EQ.filters) #DEVR
+        # print(self.EQ.EQ.filters) #DEVR
+        # DEVC: Can use the below to return the a_coefs, b_coefs, and __z to use when plotting.
+        # for filter in self.EQ.EQ.filters:
+        #     print(filter.a_coefs)
         self._updatePlots(self.time_signal, self.time_sample, self.freq_signal, self.freq_sample, resetFlag=True)
         if self.EQ.EQ.filters != []:
             self.filtered_time_signal = self.EQ.process(self.time_signal)
             self.filtered_freq_signal, filt_freq_sample = self.audio.fft(self.filtered_time_signal)
             self.filtered_freq_signal = self.audio.normalize(self.filtered_freq_signal)
+            self.EQ.get_poles_zeros()
             self._updatePlots(self.filtered_time_signal, self.time_sample, self.filtered_freq_signal, self.freq_sample, resetFlag=False)
 
     def _updatePlots(self, time_signal, time_interval, freq_signal, freq_interval, resetFlag=True):
@@ -201,6 +209,8 @@ class MainWindow(QMainWindow):
             self.timeFig.draw()
             self.audioPlot.update_freq_plot(freq_signal, freq_interval, resetFlag)
             self.freqFig.draw()
+            self.audioPlot.update_filt_plot(self.EQ.zero_arr, self.EQ.pole_arr, resetFlag)
+            self.filtFig.draw()
 
     def _playOriginal(self):
         self.audio.play_audio(self.time_signal)
@@ -211,6 +221,12 @@ class MainWindow(QMainWindow):
     def _stopPlaying(self):
         self.audio.stop_audio()
 
+    def _saveFiltered(self):
+        if self.filtered_time_signal.size > 0:
+            file_location = QFileDialog.getSaveFileName(self, 'Save File')
+            self.audio.export_song(self.filtered_time_signal, file_location[0])
+        else:
+            QMessageBox.about(self, "Error", "No filtered data to save.")
         
 
 if __name__ == "__main__":

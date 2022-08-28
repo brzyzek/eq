@@ -736,27 +736,29 @@ class Ui_Equilizer(object):
         self.timePlotWidget.setGeometry(QRect(20, 240, 641, 141))
         self.timePlotWidget.setLayout(self.timePlotLayout)
 
+        self.filterPlotLayout = QVBoxLayout()
+        self.filterPlotLayout.setObjectName(u"filterPlotLayout")
         self.filterPlotWidget = QWidget(self.centralwidget) #DEVC MATPLOTLIB
-    
         self.filterPlotWidget.setObjectName(u"filterPlotWidget")
-        self.filterPlotWidget.setGeometry(QRect(690, 70, 341, 211))
+        self.filterPlotWidget.setGeometry(QRect(690, 20, 525, 300))
+        self.filterPlotWidget.setLayout(self.filterPlotLayout)
 
         self.radioButtonpolezero = QRadioButton(self.centralwidget)
         self.radioButtonpolezero.setObjectName(u"radioButtonpolezero")
-        self.radioButtonpolezero.setGeometry(QRect(730, 300, 271, 20))
+        self.radioButtonpolezero.setGeometry(QRect(730, 315, 271, 20))
         self.radioButtonpolezero.setChecked(True)
     
-        self.radioButtonfreqdom = QRadioButton(self.centralwidget)
-        self.radioButtonfreqdom.setObjectName(u"radioButtonfreqdom")
-        self.radioButtonfreqdom.setGeometry(QRect(730, 330, 271, 20))
+        self.radioButtonmagresp = QRadioButton(self.centralwidget)
+        self.radioButtonmagresp.setObjectName(u"radioButtonmagresp")
+        self.radioButtonmagresp.setGeometry(QRect(730, 340, 271, 20))
 
-        self.radioButtontimedom = QRadioButton(self.centralwidget)
-        self.radioButtontimedom.setObjectName(u"radioButtontimedom")
-        self.radioButtontimedom.setGeometry(QRect(730, 360, 271, 20))
+        self.radioButtonphaseresp = QRadioButton(self.centralwidget)
+        self.radioButtonphaseresp.setObjectName(u"radioButtonphaseresp")
+        self.radioButtonphaseresp.setGeometry(QRect(730, 365, 271, 20))
 
         self.labelFilterPlot = QLabel(self.centralwidget)
         self.labelFilterPlot.setObjectName(u"labelFilterPlot")
-        self.labelFilterPlot.setGeometry(QRect(690, 50, 81, 16))
+        self.labelFilterPlot.setGeometry(QRect(690, 10, 81, 16))
 
         self.labelFreqPlot = QLabel(self.centralwidget)
         self.labelFreqPlot.setObjectName(u"labelFreqPlot")
@@ -822,8 +824,8 @@ class Ui_Equilizer(object):
         self.pushButtonFileImport.setText(QCoreApplication.translate("Equilizer", u"Import", None))
         self.pushButtonReset.setText(QCoreApplication.translate("Equilizer", u"Reset", None))
         self.radioButtonpolezero.setText(QCoreApplication.translate("Equilizer", u"Pole/Zero Plot", None))
-        self.radioButtonfreqdom.setText(QCoreApplication.translate("Equilizer", u"Frequency Domain Plot", None))
-        self.radioButtontimedom.setText(QCoreApplication.translate("Equilizer", u"Time Domain Plot", None))
+        self.radioButtonmagresp.setText(QCoreApplication.translate("Equilizer", u"Magnitude Response", None))
+        self.radioButtonphaseresp.setText(QCoreApplication.translate("Equilizer", u"Phase Response", None))
         self.labelFilterPlot.setText(QCoreApplication.translate("Equilizer", u"Filter Plot", None))
         self.labelFreqPlot.setText(QCoreApplication.translate("Equilizer", u"Frequency Plot", None))
         self.labelTimePlot.setText(QCoreApplication.translate("Equilizer", u"Time Plot", None))

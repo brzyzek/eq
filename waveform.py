@@ -45,6 +45,9 @@ class Signal:
         song_time_arr = np.arange(0, song_data.size) / song_samp_rate
         return (np.array(song_data), np.array(song_time_arr))
 
+    def export_song(self, song_data, filename):
+        spwav.write(filename, self.sample_rate, song_data)
+
 
     def fft(self, time_data):
         freq_data = np.fft.rfft(time_data)
@@ -95,7 +98,6 @@ class SignalPlot(Signal):
         self.freqax.set_xscale('log')
         self.freqax.plot(freq_samples, freq_data, label="original freq data", alpha=0.5)
         self.freqax.set_xlim([1,int(freq_samples[-1])])
-
         
     def format_plot(self, figure, axis):
         axis.yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(5))
@@ -105,6 +107,44 @@ class SignalPlot(Signal):
         axis.grid(True)
         figure.set_facecolor('silver')
 
+    def init_filt_plot(self):
+        self.filtfig = matplotlib.figure.Figure(figsize=(1,1), layout='constrained')
+        self.filtax = self.filtfig.figure.subplots()
+        
+        self.filtax .yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(5))
+        self.filtax .yaxis.set_minor_locator(matplotlib.ticker.MaxNLocator(10.0))
+        self.filtax .xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(5))
+        self.filtax .xaxis.set_minor_locator(matplotlib.ticker.MaxNLocator(10.0))
+        self.filtax .grid(True)
+        self.filtfig.set_facecolor('silver')
+        self.filtax.set(xlim=(-1.2, 1.2), ylim=(-1.2, 1.2))
+
+        circ = matplotlib.patches.Circle((0, 0), radius=1, fill=False, ls='dashed')
+        self.filtax.add_patch(circ)
+        return self.filtfig
+
+    def update_filt_plot(self, pole_data, zero_data, resetFlag=True):
+        if resetFlag == True:
+            self.filtax.cla()
+        pole_x = np.real(pole_data)
+        pole_y = np.imag(pole_data)
+        zero_x = np.real(zero_data)
+        zero_y = np.imag(zero_data)
+
+        self.filtax .yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(5))
+        self.filtax .yaxis.set_minor_locator(matplotlib.ticker.MaxNLocator(10.0))
+        self.filtax .xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(5))
+        self.filtax .xaxis.set_minor_locator(matplotlib.ticker.MaxNLocator(10.0))
+        self.filtax .grid(True)
+        self.filtfig.set_facecolor('silver')
+        self.filtax.set(xlim=(-1.2, 1.2), ylim=(-1.2, 1.2))
+
+        circ = matplotlib.patches.Circle((0, 0), radius=1, fill=False, ls='solid')
+        self.filtax.add_patch(circ)
+        self.filtax.scatter(pole_x, pole_y, label="Poles", marker='x', alpha=0.5)
+        self.filtax.scatter(zero_x, zero_y, label="Zeros", marker='o', alpha=0.5)
+        # plt.show() #DEVR
+
     def reset_plot(self, figure, axis):
         axis.cla()
         self.format_plot(figure, axis)
@@ -113,6 +153,9 @@ class EQ:
     def __init__(self, sample_rate):
         self.sample_rate = sample_rate
         self.EQ = adsp.EQ(self.sample_rate)
+        self.filter_arr = []
+        self.pole_arr = []
+        self.zero_arr = []
 
     def add_filter(self, type, fc, Q = 1, gain = 0):
         if gain == 0:
@@ -152,6 +195,21 @@ class EQ:
     def reset(self):
         self.EQ.reset()
         self.EQ.filters = []
+        self.filter_arr = []
+        self.pole_arr = []
+        self.zero_arr = []
+
+    def get_poles_zeros(self):
+        for filter in self.EQ.filters:
+            self.filter_arr.append(filter)
+            b_coefs = filter.b_coefs
+            self.zero_arr.append(np.roots(b_coefs))
+            a_coefs  = filter.a_coefs
+            self.pole_arr.append(np.roots(a_coefs))
+        self.zero_arr = np.concatenate(self.zero_arr, axis=0 )
+        self.pole_arr = np.concatenate(self.pole_arr, axis=0 )
+
+            
 
         
 
@@ -201,3 +259,32 @@ class EQ:
 # # plt.plot(np.abs(np.fft.rfft(y)))
 # x.EQ.plot_eq_curve()
 # plt.show()
+
+#  PLOT TESTING (FILTER)
+# x = Signal()
+# fileURL = "./songs/starwars_intro_3-star_wars.wav"
+# time_signal, time_sample = x.import_song(fileURL)
+# freq_signal, freq_sample = x.fft(time_signal)
+# # x.time_plot(time_signal, time_sample)
+# # x.freq_plot(freq_signal, freq_sample)
+
+# q = EQ(x.sample_rate)
+# # Notes: Gain in Linear Form. Calculate dB from it. (6 dB -> 2 -6dB -> .5)
+# Q = 4.5
+# gaindB= 1
+# gain = 10**(gaindB/20)
+# q.add_filter('LPF', 5000, 4.25, 1)
+# q.add_filter('LPF', 5400, 4.25, 1)
+# # y = q.process(time_signal)
+# # q.EQ.plot_eq_curve()
+# # plt.show()
+
+# q.get_poles_zeros()
+# print(q.pole_arr)
+# print(q.zero_arr)
+
+# xP = SignalPlot()
+# xP.init_filt_plot()
+# xP.update_filt_plot(q.pole_arr, q.zero_arr)
+# plt.show()
+ 
