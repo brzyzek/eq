@@ -107,7 +107,7 @@ class SignalPlot(Signal):
         axis.grid(True)
         figure.set_facecolor('silver')
 
-    def init_filt_plot(self):
+    def init_filt_pz_plot(self):
         self.filtfig = matplotlib.figure.Figure(figsize=(1,1), layout='constrained')
         self.filtax = self.filtfig.figure.subplots()
         
@@ -123,7 +123,7 @@ class SignalPlot(Signal):
         self.filtax.add_patch(circ)
         return self.filtfig
 
-    def update_filt_plot(self, pole_data, zero_data, resetFlag=True):
+    def update_filt_pz_plot(self, pole_data, zero_data, resetFlag=True):
         if resetFlag == True:
             self.filtax.cla()
         pole_x = np.real(pole_data)
@@ -144,6 +144,40 @@ class SignalPlot(Signal):
         self.filtax.scatter(pole_x, pole_y, label="Poles", marker='x', alpha=0.5)
         self.filtax.scatter(zero_x, zero_y, label="Zeros", marker='o', alpha=0.5)
 
+
+    def init_filt_mag_plot(self):
+        self.filtfig = matplotlib.figure.Figure(figsize=(1,1), layout='constrained') #DEVC: determine figsize
+        self.filtax = self.filtfig.figure.subplots()
+        
+        self.format_plot(self.filtfig, self.filtax)
+        return self.filtfig
+
+    def update_filt_mag_plot(self, w, h, sample_rate, resetFlag=True):
+        if resetFlag == True:
+            self.filtax.cla()
+        self.format_plot(self.filtfig, self.filtax)
+
+        self.filtax.set_xscale('log')
+        self.filtax.plot(w*sample_rate/np.pi, np.abs(h), label="Magnitude", alpha=0.5)
+   
+        # self.filtax.set_xlim([1,int(w[-1])]) DEVC: Need to add a scaling factor to w so that we mimic the correct frequencies. 
+
+    def init_filt_phase_plot(self):
+        self.filtfig = matplotlib.figure.Figure(figsize=(1,1), layout='constrained') #DEVC: determine figsize
+        self.filtax = self.filtfig.figure.subplots()
+        
+        self.format_plot(self.filtfig, self.filtax)
+        return self.filtfig
+
+    def update_filt_phase_plot(self, w, h, sample_rate, resetFlag=True):
+        if resetFlag == True:
+            self.filtax.cla()
+        self.format_plot(self.filtfig, self.filtax)
+
+        self.filtax.set_xscale('log')
+        self.filtax.plot(w*sample_rate/np.pi, np.angle(h), label="Phase", alpha=0.5)
+        # self.filtax.set_xlim([1,int(w[-1])]) DEVC: Need to add a scaling factor to w so that we mimic the correct frequencies. 
+
     def reset_plot(self, figure, axis):
         axis.cla()
         self.format_plot(figure, axis)
@@ -152,9 +186,11 @@ class EQ:
     def __init__(self, sample_rate):
         self.sample_rate = sample_rate
         self.EQ = adsp.EQ(self.sample_rate)
-        self.filter_arr = []
+        # self.filter_arr = []
         self.pole_arr = []
         self.zero_arr = []
+        self.w = []
+        self.h = []
 
     def add_filter(self, type, fc, Q = 1, gain = 0):
         if gain == 0:
@@ -194,19 +230,37 @@ class EQ:
     def reset(self):
         self.EQ.reset()
         self.EQ.filters = []
-        self.filter_arr = []
+        # self.filter_arr = []
         self.pole_arr = []
         self.zero_arr = []
+        self.w = []
+        self.h = []
+
 
     def get_poles_zeros(self):
         for filter in self.EQ.filters:
-            self.filter_arr.append(filter)
+            # self.filter_arr.append(filter)
             b_coefs = filter.b_coefs
             self.zero_arr.append(np.roots(b_coefs))
             a_coefs  = filter.a_coefs
             self.pole_arr.append(np.roots(a_coefs))
         self.zero_arr = np.concatenate(self.zero_arr, axis=0 )
         self.pole_arr = np.concatenate(self.pole_arr, axis=0 )
+
+    def get_impulse_response(self):
+        for filter in self.EQ.filters:
+            b_coefs = filter.b_coefs
+            a_coefs  = filter.a_coefs
+            filt_w, filt_h = spsig.freqz(b_coefs, a_coefs , worN=512)
+            if self.w == []:
+                self.w = filt_w
+            else:
+                self.w = self.w * filt_w
+
+            if self.h == []:
+                self.h = filt_h
+            else:
+                self.h = self.h * filt_h
 
             
 
@@ -283,7 +337,7 @@ class EQ:
 # print(q.zero_arr)
 
 # xP = SignalPlot()
-# xP.init_filt_plot()
-# xP.update_filt_plot(q.pole_arr, q.zero_arr)
+# xP.init_filt_pz_plot()
+# xP.update_filt_pz_plot(q.pole_arr, q.zero_arr)
 # plt.show()
  

@@ -32,6 +32,7 @@ class MainWindow(QMainWindow):
         self.freq_sample = np.array([])
         self.filtered_time_signal = np.array([])
         self.filtered_freq_signal = np.array([])
+        self.filter_view = 'pz'
 
         self._initFilters()
         self._initButtons()
@@ -49,6 +50,9 @@ class MainWindow(QMainWindow):
         self.ui.pushButtonPlayFiltered.clicked.connect(self._playFiltered)
         self.ui.pushButtonStop.clicked.connect(self._stopPlaying)
         self.ui.pushButtonSaveFiltered.clicked.connect(self._saveFiltered)
+        self.ui.radioButtonpolezero.clicked.connect(self._changeFiltPlotPZ)
+        self.ui.radioButtonmagresp.clicked.connect(self._changeFiltPlotMag)
+        self.ui.radioButtonphaseresp.clicked.connect(self._changeFiltPlotPhase)
 
 
     def _FileExplorer(self):
@@ -78,6 +82,14 @@ class MainWindow(QMainWindow):
             self.EQ = EQ(self.sample_rate)
 
     def _resetFunction(self):
+        self.fileURL = ""
+        self.time_signal = np.array([])
+        self.freq_signal = np.array([])
+        self.time_sample = np.array([])
+        self.freq_sample = np.array([])
+        self.filtered_time_signal = np.array([])
+        self.filtered_freq_signal = np.array([])
+        self.filter_view = 'pz'
         self.ui.lineEditFileBrowse.setText(None)
 
         self.ui.verticalSlider25Hz.setValue(0)
@@ -128,7 +140,7 @@ class MainWindow(QMainWindow):
         self.ui.timePlotLayout.addWidget(self.timeFig)
         self.freqFig = FigureCanvas(self.audioPlot.init_freq_plot())
         self.ui.frequencyPlotLayout.addWidget(self.freqFig)
-        self.filtFig = FigureCanvas(self.audioPlot.init_filt_plot())
+        self.filtFig = FigureCanvas(self.audioPlot.init_filt_pz_plot())
         self.ui.filterPlotLayout.addWidget(self.filtFig)
 
     def _initFilters(self):
@@ -202,15 +214,25 @@ class MainWindow(QMainWindow):
             self.filtered_freq_signal, filt_freq_sample = self.audio.fft(self.filtered_time_signal)
             self.filtered_freq_signal = self.audio.normalize(self.filtered_freq_signal)
             self.EQ.get_poles_zeros()
-            self._updatePlots(self.filtered_time_signal, self.time_sample, self.filtered_freq_signal, self.freq_sample, resetFlag=False)
+            self.EQ.get_impulse_response()
+            self._updatePlots(self.filtered_time_signal, self.time_sample, self.filtered_freq_signal, self.freq_sample, resetFlag=False, filtFlag=True)
 
-    def _updatePlots(self, time_signal, time_interval, freq_signal, freq_interval, resetFlag=True):
+    def _updatePlots(self, time_signal, time_interval, freq_signal, freq_interval, resetFlag=True, filtFlag=False):
             self.audioPlot.update_time_plot(time_signal, time_interval, resetFlag)
             self.timeFig.draw()
             self.audioPlot.update_freq_plot(freq_signal, freq_interval, resetFlag)
             self.freqFig.draw()
-            self.audioPlot.update_filt_plot(self.EQ.zero_arr, self.EQ.pole_arr, resetFlag)
-            self.filtFig.draw()
+            if filtFlag == True:
+                if self.filter_view == 'pz':
+                    self.audioPlot.update_filt_pz_plot(self.EQ.zero_arr, self.EQ.pole_arr, True)
+                    self.filtFig.draw()
+                elif self.filter_view == 'mag':
+                    self.audioPlot.update_filt_mag_plot(self.EQ.w, self.EQ.h, self.sample_rate, True)
+                    self.filtFig.draw()
+                elif self.filter_view == 'phase':
+                    self.audioPlot.update_filt_phase_plot(self.EQ.w, self.EQ.h, self.sample_rate, True)
+                    self.filtFig.draw()
+                
 
     def _playOriginal(self):
         self.audio.play_audio(self.time_signal)
@@ -227,6 +249,36 @@ class MainWindow(QMainWindow):
             self.audio.export_song(self.filtered_time_signal, file_location[0])
         else:
             QMessageBox.about(self, "Error", "No filtered data to save.")
+
+    def _changeFiltPlotPZ(self):
+        self.filter_view = 'pz'
+        placeholder = self.filtFig
+        self.filtFig = FigureCanvas(self.audioPlot.init_filt_pz_plot())
+        self.ui.filterPlotLayout.replaceWidget(placeholder, self.filtFig)
+
+        if self.filtered_time_signal.size > 0:
+            self.audioPlot.update_filt_pz_plot(self.EQ.zero_arr, self.EQ.pole_arr, True)
+            self.filtFig.draw()
+
+    def _changeFiltPlotMag(self):
+        self.filter_view = 'mag'
+        placeholder = self.filtFig
+        self.filtFig = FigureCanvas(self.audioPlot.init_filt_mag_plot())
+        self.ui.filterPlotLayout.replaceWidget(placeholder, self.filtFig)
+
+        if self.filtered_time_signal.size > 0:
+            self.audioPlot.update_filt_mag_plot(self.EQ.w, self.EQ.h, self.sample_rate, True)
+            self.filtFig.draw()
+
+    def _changeFiltPlotPhase(self):
+        self.filter_view = 'phase'
+        placeholder = self.filtFig
+        self.filtFig = FigureCanvas(self.audioPlot.init_filt_phase_plot())
+        self.ui.filterPlotLayout.replaceWidget(placeholder, self.filtFig)
+
+        if self.filtered_time_signal.size > 0:
+            self.audioPlot.update_filt_phase_plot(self.EQ.w, self.EQ.h, self.sample_rate, True)
+            self.filtFig.draw()
         
 
 if __name__ == "__main__":
