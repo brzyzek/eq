@@ -14,7 +14,6 @@ from PySide6.QtWidgets import (QApplication, QHBoxLayout, QLabel, QLineEdit,
     QMainWindow, QPushButton, QRadioButton, QSizePolicy,
     QSlider, QStatusBar, QVBoxLayout, QWidget)
 
-# from mplwidget import MplWidget #DEVC - Remove? matlabplot widget reference.
 
 class Ui_Equilizer(object):
     def setupUi(self, Equilizer):
@@ -724,21 +723,21 @@ class Ui_Equilizer(object):
 
         self.frequencyPlotLayout = QVBoxLayout()
         self.frequencyPlotLayout.setObjectName(u"frequencyPlotLayout")
-        self.frequencyPlotWidget = QWidget(self.centralwidget) #DEVC MATPLOTLIB
+        self.frequencyPlotWidget = QWidget(self.centralwidget)
         self.frequencyPlotWidget.setObjectName(u"frequencyPlotWidget")
         self.frequencyPlotWidget.setGeometry(QRect(20, 70, 641, 141))
         self.frequencyPlotWidget.setLayout(self.frequencyPlotLayout)
 
         self.timePlotLayout = QVBoxLayout()
         self.timePlotLayout.setObjectName(u"timePlotLayout")
-        self.timePlotWidget = QWidget(self.centralwidget) #DEVC MATPLOTLIB
+        self.timePlotWidget = QWidget(self.centralwidget)
         self.timePlotWidget.setObjectName(u"timePlotWidget")
         self.timePlotWidget.setGeometry(QRect(20, 240, 641, 141))
         self.timePlotWidget.setLayout(self.timePlotLayout)
 
         self.filterPlotLayout = QVBoxLayout()
         self.filterPlotLayout.setObjectName(u"filterPlotLayout")
-        self.filterPlotWidget = QWidget(self.centralwidget) #DEVC MATPLOTLIB
+        self.filterPlotWidget = QWidget(self.centralwidget)
         self.filterPlotWidget.setObjectName(u"filterPlotWidget")
         self.filterPlotWidget.setGeometry(QRect(690, 20, 525, 300))
         self.filterPlotWidget.setLayout(self.filterPlotLayout)
@@ -769,13 +768,11 @@ class Ui_Equilizer(object):
         self.labelTimePlot.setGeometry(QRect(20, 220, 81, 16))
 
         Equilizer.setCentralWidget(self.centralwidget)
-        # self.statusbar = QStatusBar(Equilizer)
-        # self.statusbar.setObjectName(u"statusbar")
-        # Equilizer.setStatusBar(self.statusbar)
 
         self.retranslateUi(Equilizer)
 
         QMetaObject.connectSlotsByName(Equilizer)
+
 
     def retranslateUi(self, Equilizer):
         Equilizer.setWindowTitle(QCoreApplication.translate("Equilizer", u"Equilizer ", None))
